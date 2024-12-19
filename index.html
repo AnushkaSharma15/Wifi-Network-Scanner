@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Network Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wi-Fi Network Scanner</h1>
+    <button onclick="scanNetworks()">Scan for Networks</button>
+    <table>
+        <thead>
+            <tr>
+                <th>SSID</th>
+                <th>Signal Strength</th>
+                <th>Security</th>
+            </tr>
+        </thead>
+        <tbody id="wifi-table">
+            <tr>
+                <td colspan="3">Click "Scan for Networks" to see available Wi-Fi networks.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function scanNetworks() {
+            fetch('/scan')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('wifi-table');
+                    tableBody.innerHTML = ''; // Clear table body
+                    if (data.length > 0) {
+                        data.forEach(network => {
+                            const row = `<tr>
+                                            <td>${network.SSID || 'Hidden'}</td>
+                                            <td>${network.Signal || 'N/A'}</td>
+                                            <td>${network.Security || 'N/A'}</td>
+                                         </tr>`;
+                            tableBody.insertAdjacentHTML('beforeend', row);
+                        });
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="3">No networks found.</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to scan for Wi-Fi networks.');
+                });
+        }
+    </script>
+</body>
+</html>
